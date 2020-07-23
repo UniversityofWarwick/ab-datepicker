@@ -231,7 +231,7 @@
 		}
 		factory(jQuery);
 	}
-}(function($, undefined){
+}(function($){
 	'use strict';
 
 	// Icon sets for templates
@@ -256,9 +256,10 @@
 
 	// Constants
 
-	const VIEW_DAYS = 0,
-	      VIEW_MONTHS = 1,
-	      VIEW_YEARS = 2;
+	const 
+			VIEW_DAYS = 0,
+			VIEW_MONTHS = 1,
+			VIEW_YEARS = 2;
 
 	// Templates
 
@@ -482,7 +483,7 @@
 			this.$grid.addClass('rtl');
 		}
 		this.$timeview = this.$calendar.find('.datepicker-time-view');
-		var $days = this.$grid.find('th.datepicker-day abbr');
+		
 		this.drawCalendarHeader();
 		if (this.options.inline == false && this.options.modal == true) {
 			this.$close = this.$calendar.find('.datepicker-close');
@@ -543,11 +544,10 @@
 				return false;
 			}
 		});
-		this.$calendar.on('blur', function(e) {
+		this.$calendar.on('blur', function() {
 			if (self.$calendar.attr('aria-hidden') === 'false') {
 				self.hide();
 			}
-
 		});
 	}
 
@@ -2294,7 +2294,7 @@
 					if (e.ctrlKey || e.shiftKey) {
 						return true;
 					}
-					var $lastCell = $cells.eq($cells.length - 1);
+					let $lastCell = $cells.eq($cells.length - 1);
 					this.unSelectGridCell($curCell.attr('id'));
 					this.$grid.attr('aria-activedescendant', $lastCell.attr('id'));
 					this.selectGridCell($lastCell.attr('id'));
@@ -2358,7 +2358,7 @@
 		}
 		this.$grid.find('.focus').removeClass('focus').attr('aria-selected', 'false').attr('tabindex', -1);
 		switch (this.gridType) {
-			case VIEW_DAYS: // days grid
+			case VIEW_DAYS: {// days grid
 				this.$grid.attr('aria-activedescendant', $cell.attr('id'));
 				this.selectGridCell($cell.attr('id'));
 				let value = parseInt($cell.attr('data-value'), 10);
@@ -2373,6 +2373,7 @@
 					this.hide();
 				}
 				break;
+			}
 			case VIEW_MONTHS: // months grid
 				this.showDaysOfMonth(parseInt($cell.attr('data-value'), 10));
 				break;

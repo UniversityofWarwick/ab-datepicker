@@ -1,6 +1,6 @@
 {
-  "name": "@eureka2/ab-datepicker",
-  "version": "2.1.19",
+  "name": "@universityofwarwick/ab-datepicker",
+  "version": "2.2.0",
   "description": "An accessible and bootstrap compatible datepicker",
   "main": "js/datepicker.js",
   "directories": {
@@ -10,6 +10,7 @@
     "minify-js": "terser -o js/datepicker.min.js js/datepicker.js --source-map url=datepicker.min.js.map",
     "build": "npm run minify-js",
     "prepublishOnly": "npm run build",
+    "lint": "eslint js/datepicker.js",
     "test": "echo \"No automated tests, open test/*.html demos in browser\" && exit 1"
   },
   "repository": {
@@ -20,13 +21,9 @@
     "datepicker",
     "accessible"
   ],
-  "author": "Jacques Archimède",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/eureka2/ab-datepicker/issues"
-  },
-  "homepage": "https://github.com/eureka2/ab-datepicker#readme",
   "devDependencies": {
+    "eslint": "7.5.0",
     "terser": "4.8.0"
   }
 }
