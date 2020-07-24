@@ -128,6 +128,7 @@ and give some options to the datepicker. See [Configuration options](#configurat
 |daysOfWeekDisabled    |Array of the week days number to disable|[]|daysOfWeekDisabled: [0, 6]|
 |firstDayOfWeek        |Determines the first column of the calendar grid<br>0 = Sunday, 1 = Monday, ....|Date.dp_locales.firstday_of_week (*)|firstDayOfWeek: 1 |
 |fontAwesome		   |Set to true to use Font Awesome icons instead of Glyphicons.|false|fontAwesome: true |
+|fontAwesomePro		   |Set to true to use Font Awesome Pro instead of Free. Requires fontAwesome:true, and an FA Pro license.|false|fontAwesomePro: true |
 |gainFocusOnConstruction | Indicates if the datepicker should gain focus when it is constructed|true|gainFocusOnConstruction: false |
 |inline                |Display the datepicker inline inside a given div|false|inline: $('#inline-div')|
 |inputFormat           |date input format by the user. Dates and times are formatted according to [CLDR Date Time patterns](http://cldr.unicode.org/translation/date-time)|Date.dp_locales.short_format (*)|inputFormat: 'd/M/y'|

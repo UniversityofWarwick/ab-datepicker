@@ -122,6 +122,16 @@
             </div>
 
             <div class="form-group">
+                <label class="control-label" for="date1-modal">
+                    Date but it's a modal:
+                </label>
+                <div class="input-group">
+                    <input type="text" name="date1" id="date1" class="form-control datepicker" data-modal="true">
+                </div>
+            </div>
+
+
+            <div class="form-group">
                 <label class="control-label" for="date2">
                     Date with restricted times:
                 </label>
@@ -134,12 +144,12 @@
                 <label class="control-label" for="date3">
                     Custom button:
                 </label>
-                <div class="input-group">
+                
                     <input type="hidden" data-button="date3-button" name="date3" id="date3" class="datepicker">
                     <a href="#" id="date3-button" class="btn btn-danger">
                         📆 CUSTOM BUTTON 🎉
                     </a>
-                </div>
+                
             </div>
 
             <div class="form-group">
@@ -165,16 +175,17 @@
 
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <script>
-      const getNavigatorLanguage = () => (navigator.languages && navigator.languages.length) ? navigator.languages[0] : navigator.userLanguage || navigator.language || navigator.browserLanguage || 'en';
-    </script>
     <script src="../js/datepicker.js"></script>
     <script>
         (function($) {
             $(function() {
-                const getNavigatorLanguage = () => (navigator.languages && navigator.languages.length) ? navigator.languages[0] : navigator.userLanguage || navigator.language || navigator.browserLanguage || 'en';
-                const updateValue = (v) => $('#last-chosen-date').html(v);
-                $("#date1, #date3")
+                function getNavigatorLanguage () { 
+                    return (navigator.languages && navigator.languages.length) ? navigator.languages[0] : navigator.userLanguage || navigator.language || navigator.browserLanguage || 'en'; 
+                }
+                function updateValue (v) {
+                    $('#last-chosen-date').html(v);
+                } 
+                $("#date1, #date1-modal, #date3")
                     .datepicker({ 
                         gainFocusOnConstruction: false,
                         fontAwesome: true,

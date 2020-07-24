@@ -82,6 +82,7 @@ a.datepicker-button {
 	font-weight: bold;
 	font-size: 1.2em;
 	padding-top: 1px;
+	white-space: nowrap;
 }
 .datepicker-calendar .datepicker-month:not(.disabled) {
 	cursor: pointer;
@@ -92,8 +93,13 @@ a.datepicker-button {
 	display: inline-block;
 	content: "\e252";
 }
-.datepicker-calendar.use-fa-icons .datepicker-month:after {
+.datepicker-calendar.use-fa-free .datepicker-month:after {
 	font-family: "Font Awesome 5 Free";
+}
+.datepicker-calendar.use-fa-pro .datepicker-month:after {
+	font-family: "Font Awesome 5 Pro";
+}
+.datepicker-calendar.use-fa-icons .datepicker-month:after {
 	font-size: 0.7em;
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-font-smoothing: antialiased;
@@ -117,6 +123,13 @@ a.datepicker-button {
 .datepicker-calendar .datepicker-row {
 	display: flex;
 }
+
+.datepicker-calendar .datepicker-calendar-column {
+	/* ensure it uses the whole width of the popup if it can */
+	flex-grow: 1;
+	width: 22em;
+}
+
 .datepicker-calendar .datepicker-time-view {
 	height: 212px;
 	overflow-y: scroll;
@@ -404,3 +417,9 @@ a.datepicker-button.bootstrap:focus {
 	border-color:  #999;
 	color: #000;
 }
+
+.datepicker-calendar .datepicker-help-text {
+	padding: 0.3em 0.6em;
+	display: none;
+}
+ 

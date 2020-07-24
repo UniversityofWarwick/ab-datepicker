@@ -263,13 +263,15 @@
 
 	// Templates
 
+	const helpText = '<div class="datepicker-help-text">Page up/down to skip months, Alt + page up/down to skip years</div>';
+
 	var datepickerButton3 = [
-		'<a class="datepicker-button bootstrap3 {icon-is-fa} input-group-addon btn" role="button" tabindex="0" aria-haspopup="true" aria-labelledby="datepicker-bn-open-label-CALENDARID" title="Select Date...">',
+		'<a class="datepicker-button bootstrap3 {icon-is-fa} {icon-fa-edition} input-group-addon btn" role="button" tabindex="0" aria-labelledby="datepicker-bn-open-label-CALENDARID" title="Select Date...">',
 		'	<span aria-hidden="true" class="{icon-calendar}"></span><span class="sr-only">Select Date...</span>',
 		'</a>'
 	];
 	var datepickerCalendar3 = [
-		'<div class="datepicker-calendar bootstrap3 {icon-is-fa}" id="datepicker-calendar-CALENDARID" aria-hidden="false">',
+		'<div class="datepicker-calendar bootstrap3 {icon-is-fa} {icon-fa-edition}" id="datepicker-calendar-CALENDARID" aria-hidden="false" role="dialog">',
 		'   <div class="datepicker-row">',
 		'   <div class="datepicker-calendar-column">',
 		'	<div class="datepicker-month-wrap">',
@@ -300,6 +302,7 @@
 		'   </div>', // datepicker-calendar-column
 		'   <div class="datepicker-time-view"></div>',
 		'   </div>', // datepicker-row
+		helpText,
 		'	<div class="datepicker-close-wrap">',
 		'		<button class="datepicker-button datepicker-close" id="datepicker-close-CALENDARID" aria-labelledby="datepicker-bn-close-label-CALENDARID">Close</button>',
 		'	</div>',
@@ -313,12 +316,12 @@
 	];
 
 	var datepickerButton4 = [
-		'<a class="datepicker-button bootstrap4 {icon-is-fa} input-group-append" tabindex="0" role="button" aria-haspopup="true" aria-labelledby="datepicker-bn-open-label-CALENDARID" title="Select Date...">',
+		'<a class="datepicker-button bootstrap4 {icon-is-fa} {icon-fa-edition} input-group-append" tabindex="0" role="button" aria-labelledby="datepicker-bn-open-label-CALENDARID" title="Select Date...">',
 		'	<span class="input-group-text"><i class="{icon-calendar}"></i></span>',
 		'</a>'
 	];
 	var datepickerCalendar4 = [
-		'<div class="datepicker-calendar bootstrap4 {icon-is-fa}" id="datepicker-calendar-CALENDARID" aria-hidden="false">',
+		'<div class="datepicker-calendar bootstrap4 {icon-is-fa} {icon-fa-edition}" id="datepicker-calendar-CALENDARID" aria-hidden="false" role="dialog">',
 		'   <div class="datepicker-row">',
 		'   <div class="datepicker-calendar-column">',
 		'	<div class="datepicker-month-wrap">',
@@ -349,6 +352,7 @@
 		'   </div>', // datepicker-calendar-column
 		'   <div class="datepicker-time-view"></div>',
 		'   </div>', // datepicker-row
+		helpText,
 		'	<div class="datepicker-close-wrap">',
 		'		<button class="datepicker-button datepicker-close" id="datepicker-close-CALENDARID" aria-labelledby="datepicker-bn-close-label-CALENDARID">Close</button>',
 		'	</div>',
@@ -422,17 +426,28 @@
 		}
 		this.id = this.$target.attr('id') || 'datepicker-' + Math.floor(Math.random() * 100000);
 
+		/** Whether the link and calendar will be contained in an input-group element, or left loose */
+		const needsWrapper = !this.options.button;
+
+		function specificFaIcons () {
+			return jQuery.extend({}, FAICONS, {
+				'fa-edition': self.options.fontAwesomePro ? 'use-fa-pro' : 'use-fa-free'
+			});
+		}
+
 		// Use glyphicons unless fontAwesome:true or markup:bootstrap4
-		var iconSet = (this.options.fontAwesome || this.options.markup === 'bootstrap4') ? FAICONS : GLYPHICONS;
+		var iconSet = (this.options.fontAwesome || this.options.markup === 'bootstrap4') ? specificFaIcons() : GLYPHICONS;
 		var calendar = this.options.markup == 'bootstrap3' ? datepickerCalendar3.join("") : datepickerCalendar4.join("");
 		calendar = calendar.replace(/CALENDARID/g, this.id + '');
 		calendar = replaceIcons(calendar, iconSet);
 
-		// complete the target textbox if any
-		if (this.$target.parent('.input-group').length == 0) {
-			this.$target.wrap( '<div class="input-group"></div>' );
+		// complete the target textbox if any (and not using a custom button)
+		if (needsWrapper) {
+			if (this.$target.parent('.input-group').length === 0) {
+				this.$target.wrap( '<div class="input-group"></div>' );
+			}
+			this.$group = this.$target.parent('.input-group');
 		}
-		this.$group = this.$target.parent('.input-group');
 		this.$target.attr('aria-autocomplete', 'none');
 		this.$target.css('min-width', '7em');
 		this.$target.addClass('form-control');
@@ -460,6 +475,8 @@
 			}
 		}
 
+		const $offsetFrom = needsWrapper ? this.$target.parent() : this.$button;
+
 		this.$calendar = $(calendar);
 		this.$calendar.addClass(this.options.theme);
 
@@ -472,7 +489,7 @@
 			this.$calendar.attr('aria-controls', this.$target.attr('id'));
 		}
 		this.$button.find('span').attr('title', this.options.buttonTitle);
-		this.$calendar.css('left', this.$target.parent().position().left + 'px');
+		this.$calendar.css('left', $offsetFrom.position().left + 'px');
 		this.$monthObj = this.$calendar.find('.datepicker-month');
 		this.$prev = this.$calendar.find('.datepicker-month-prev');
 		this.$next = this.$calendar.find('.datepicker-month-next');
@@ -502,7 +519,7 @@
 			this.initializeDate();
 		} else {
 			this.$calendar.css({display: 'none'});
-			this.$target.parent().after(this.$calendar);
+			$offsetFrom.after(this.$calendar);
 			this.hide(!this.options.gainFocusOnConstruction);
 		}
 
@@ -523,6 +540,8 @@
 
 		this.bindHandlers();
 		this.$button.click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
 			if (!$(this).hasClass('disabled')) {
 				if (self.$calendar.attr('aria-hidden') === 'true') {
 					self.initializeDate();
@@ -534,11 +553,11 @@
 					self.selectGridCell(self.$grid.attr('aria-activedescendant'));
 				}
 			}
-			e.stopPropagation();
 			return false;
 		});
 		this.$button.keydown(function(e) {
 			var ev = e || event;
+			self.keyboardUsed();
 			if(ev.keyCode == self.keys.enter || ev.keyCode == self.keys.space) {
 				$(this).trigger('click');
 				return false;
@@ -581,7 +600,7 @@
 		changeRangeButtonLabel: Date.dp_locales.texts.changeRangeButtonLabel,
 		closeButtonTitle: Date.dp_locales.texts.closeButtonTitle,
 		closeButtonLabel: Date.dp_locales.texts.closeButtonLabel,
-		onUpdate: function (value) {},
+		onUpdate: function () {},
 		previous: null,
 		next: null,
 		allowSameDate: true,
@@ -595,6 +614,8 @@
 		minHour: 0,
 		maxHour: 23,
 		minuteIncrements: 30,
+		fontAwesome: false,
+		fontAwesomePro: false,
 	}
 
 	/**
@@ -700,7 +721,6 @@
 		var h, m, $li;
 		this.log('populateTimePane');
 		this.$timeview.attr('tabindex', '-1');
-		var $td = $('<td>');
 		var $list = $('<ul>').addClass('list-unstyled')
 			.attr('role','listbox')
 			.attr('tabindex', 0);
@@ -726,10 +746,7 @@
 		if (!$list.find('.curTime').length) {
 			$list.find('li').first().addClass('curTime');
 		}
-		this.$prev.hide();
-		this.$next.hide();
-		this.$fastprev.hide();
-		this.$fastnext.hide();
+		
 		this.$timeview.empty().append($list);
 		//this.scrollIntoView(this.$timeview.find('.curTime'));
 	}; // end populateTimePane
@@ -1446,7 +1463,7 @@
 		});
 
 		// bind target handlers
-		this.$target.change(function(e) {
+		this.$target.change(function() {
 			var date = self.parseDate($(this).val());
 			self.updateLinked(date);
 		});
@@ -1454,6 +1471,7 @@
 
 	Datepicker.prototype.handleTimeViewKeyDown = function(e) {
 		this.log('handleTimeViewKeyDown');
+		this.keyboardUsed();
 		var $li = this.$timeview.find('li.focus');
 		switch (e.keyCode) {
 			case this.keys.esc:
@@ -2012,6 +2030,7 @@
 		if (this.options.timeOnly) {
 			return true;
 		}
+		this.keyboardUsed();
 		var $curCell = $('#' + this.$grid.attr('aria-activedescendant'));
 		var $cells = this.$grid.find('td.selectable');
 		var colCount = this.$grid.find('tbody tr').eq(0).find('td').length;
@@ -2032,15 +2051,14 @@
 							this.$close.focus();
 						}
 						e.stopPropagation()
-						return false;
 					} else {
 						// dismiss the dialog box
 						this.hide();
 						this.handleTabOut(e);
 						e.stopPropagation();
-						return false;
+						
 					}
-					break;
+					return false;
 				}
 			case this.keys.enter:
 			case this.keys.space:
@@ -2085,8 +2103,8 @@
 						if (e.ctrlKey || e.shiftKey) {
 							return true;
 						}
-						var cellIndex = $cells.index($curCell) - 1;
-						var $prevCell = null;
+						let cellIndex = $cells.index($curCell) - 1;
+						let $prevCell = null;
 						if (cellIndex >= 0) {
 							$prevCell = $cells.eq(cellIndex);
 							this.unSelectGridCell($curCell.attr('id'));
@@ -2111,8 +2129,8 @@
 						if (e.ctrlKey || e.shiftKey) {
 							return true;
 						}
-						var cellIndex = $cells.index($curCell) + 1;
-						var $nextCell = null;
+						let cellIndex = $cells.index($curCell) + 1;
+						let $nextCell = null;
 						if (cellIndex < $cells.length) {
 							$nextCell = $cells.eq(cellIndex);
 							this.unSelectGridCell($curCell.attr('id'));
@@ -2141,9 +2159,9 @@
 					if (e.ctrlKey || e.shiftKey) {
 						return true;
 					}
-					var $allCells = this.$grid.find('td');
-					var cellIndex = $allCells.index($curCell) - colCount;
-					var $prevCell = null;
+					let $allCells = this.$grid.find('td');
+					let cellIndex = $allCells.index($curCell) - colCount;
+					let $prevCell = null;
 					while (cellIndex >= 0 && ! $allCells.eq(cellIndex).hasClass('selectable')) {
 						cellIndex--;
 					}
@@ -2242,12 +2260,12 @@
 				}
 			case this.keys.pagedown:
 				{
-					var active = this.$grid.attr('aria-activedescendant');
+					let active = this.$grid.attr('aria-activedescendant');
 					if (e.shiftKey || e.ctrlKey) {
 						return true;
 					}
 					e.preventDefault();
-					var ok = false;
+					let ok = false;
 					switch (this.gridType) {
 						case VIEW_DAYS: // days grid
 							if (e.altKey) {
@@ -2267,7 +2285,7 @@
 					if (ok) {
 						if ($('#' + active).attr('id') == undefined) {
 							$cells = this.$grid.find('td.selectable');
-							var $lastCell = $cells.eq($cells.length - 1);
+							let $lastCell = $cells.eq($cells.length - 1);
 							this.$grid.attr('aria-activedescendant', $lastCell.attr('id'));
 							this.selectGridCell($lastCell.attr('id'));
 						} else {
@@ -2392,14 +2410,14 @@
 	 *
 	 *	@return {boolean} true
 	 */
-	Datepicker.prototype.handleGridFocus = function(e) {
+	Datepicker.prototype.handleGridFocus = function() {
 		if (this.options.timeOnly) {
 			return true;
 		}
-		var active = this.$grid.attr('aria-activedescendant');
+		let active = this.$grid.attr('aria-activedescendant');
 		if ($('#' + active).attr('id') == undefined) {
-			var $cells = this.$grid.find('td.selectable');
-			var $lastCell = $cells.eq($cells.length - 1);
+			let $cells = this.$grid.find('td.selectable');
+			let $lastCell = $cells.eq($cells.length - 1);
 			this.$grid.attr('aria-activedescendant', $lastCell.attr('id'));
 			this.selectGridCell($lastCell.attr('id'));
 		} else {
@@ -2414,7 +2432,7 @@
 	 *
 	 *	@return {boolean} true
 	 */
-	Datepicker.prototype.handleGridBlur = function(e) {
+	Datepicker.prototype.handleGridBlur = function() {
 		this.unSelectGridCell(this.$grid.attr('aria-activedescendant'));
 		return true;
 	} // end handleGridBlur()
@@ -2450,6 +2468,16 @@
 	 *	@return true
 	 */
 	Datepicker.prototype.changeGrid = function(e) {
+		if (this.gridType === VIEW_YEARS) {
+			if (e.shiftKey) {
+				// goto previous twenty years
+				this.year -= 20;
+			} else {
+				// goto next twenty years
+				this.year += 20;
+			}
+		}
+
 		switch (this.gridType) {
 			case VIEW_DAYS: // days grid
 				this.populateMonthsCalendar();
@@ -2461,18 +2489,11 @@
 				}
 				this.selectGridCell(this.$grid.attr('aria-activedescendant'));
 				break;
-			case VIEW_YEARS: // years grid
-				if (e.shiftKey) {
-					// goto previous twenty years
-					this.year -= 20;
-				} else {
-					// goto next twenty years
-					this.year += 20;
-				}
+			case VIEW_YEARS: // years grid - we've already jumped years above, now fallthrough to show these new years
 			case VIEW_MONTHS: // months grid
 				this.populateYearsCalendar();
 				if (this.year != this.curYear) {
-					var $cells = this.$grid.find('td.selectable');
+					let $cells = this.$grid.find('td.selectable');
 					this.$grid.attr('aria-activedescendant', $cells.eq(0).attr('id'));
 				} else {
 					this.$grid.attr('aria-activedescendant', this.$grid.find('.curYear').attr('id'));
@@ -2527,29 +2548,29 @@
 	 */
 	Datepicker.prototype.updateLinked = function(date) {
 		if (this.options.previous !== null && this.options.previous.val() !== '') {
-			var previousDate = this.options.previous.datepicker('getDate');
+			let previousDate = this.options.previous.datepicker('getDate');
 			if (this.options.allowSameDate) {
 				if (previousDate > date) {
-					var previousVal = this.formatDate(date, this.options.previous.datepicker('outputFormat'));
+					let previousVal = this.formatDate(date, this.options.previous.datepicker('outputFormat'));
 					this.options.previous.val(previousVal);
 				}
 			} else {
 				if (previousDate >= date) {
-					var previousVal = this.formatDate(new Date(date.getTime() - 60*60*24*1000), this.options.previous.datepicker('outputFormat'));
+					let previousVal = this.formatDate(new Date(date.getTime() - 60*60*24*1000), this.options.previous.datepicker('outputFormat'));
 					this.options.previous.val(previousVal);
 				}
 			}
 		}
 		if (this.options.next !== null && this.options.next.val() !== '') {
-			var nextDate = this.options.next.datepicker('getDate');
+			let nextDate = this.options.next.datepicker('getDate');
 			if (this.options.allowSameDate) {
 				if (nextDate < date) {
-					var nextVal = this.formatDate(date, this.options.next.datepicker('outputFormat'));
+					let nextVal = this.formatDate(date, this.options.next.datepicker('outputFormat'));
 					this.options.next.val(nextVal);
 				}
 			} else {
 				if (nextDate <= date) {
-					var nextVal = this.formatDate(new Date(date.getTime() + 60*60*24*1000), this.options.next.datepicker('outputFormat'));
+					let nextVal = this.formatDate(new Date(date.getTime() + 60*60*24*1000), this.options.next.datepicker('outputFormat'));
 					this.options.next.val(nextVal);
 				}
 			}
@@ -2591,15 +2612,14 @@
 	 *	@return N/A
 	 */
 	Datepicker.prototype.show = function() {
-		var self = this;
+		const self = this;
 		$('.datepicker-calendar').trigger('ab.datepicker.opening', [self.id]);
 		if (this.options.modal == true) {
 			if (!this.modalEventHandler) {
-				this.modalEventHandler = function(e) {
+				this.modalEventHandler = function(/*e*/) {
 					//ensure focus remains on the dialog
 					self.initialFocus();
 					// Consume all mouse events and do nothing
-					e.stopPropagation();
 					return false;
 				};
 			}
@@ -2626,12 +2646,14 @@
 			}
 		});
 
+		var $offsetFrom = (this.$group && this.$group.length) ? this.$group : this.$button;
+
 		// adjust position of the calendar
-		var groupOffsetTop = Math.max(0, Math.floor(this.$group[0].offsetTop));
-		var groupOffsetLeft = Math.max(0, Math.floor(this.$group[0].offsetLeft + this.$target[0].offsetLeft));
+		var groupOffsetTop = Math.max(0, Math.floor($offsetFrom[0].offsetTop));
+		var groupOffsetLeft = Math.max(0, Math.floor($offsetFrom[0].offsetLeft + this.$target[0].offsetLeft));
 		var calendarHeight = this.$calendar.outerHeight();
-		var groupAbsoluteTop = this.$group.offset().top;
-		var groupHeight = this.$group.outerHeight(true);
+		var groupAbsoluteTop = $offsetFrom.offset().top;
+		var groupHeight = $offsetFrom.outerHeight(true);
 		var roomBefore = Math.floor(groupAbsoluteTop - $(window).scrollTop());
 		var roomAfter = Math.floor($(window).height() - (groupAbsoluteTop + groupHeight - $(window).scrollTop()));
 		if (roomAfter < calendarHeight && roomAfter < roomBefore) {
@@ -2692,7 +2714,7 @@
 	 *
 	 *	@return {boolean} false if consuming event, true if propagating
 	 */
-	 Datepicker.prototype.handleDocumentClick = function(e) {
+	Datepicker.prototype.handleDocumentClick = function(e) {
 		if ($(e.target).parents('#datepicker-calendar-' + this.id).length == 0) {
 			this.hide();
 			return true;
@@ -2710,7 +2732,7 @@
 	 *
 	 *	@return N/A
 	 */
-	 Datepicker.prototype.hide = function(omitSettingFocus) {
+	Datepicker.prototype.hide = function(omitSettingFocus) {
 		if (this.options.inline == false) {
 			var self = this;
 			// unbind the modal event sinks
@@ -2967,6 +2989,7 @@
 		var self = this;
 
 		$.each(format.match(/(.).*?\1*/g), function(k, token) {
+			let i;
 			// Extract contents of value based on format token
 			switch (token) {
 				case 'yyyy':
@@ -2990,8 +3013,8 @@
 				case 'MMM':
 				case 'LLL':
 					month = 0;
-					for (var i = 0; i < self.locales.month_names_abbreviated.length; i++) {
-						var month_name = self.locales.month_names_abbreviated[i];
+					for (i = 0; i < self.locales.month_names_abbreviated.length; i++) {
+						const month_name = self.locales.month_names_abbreviated[i];
 						if (value.substring(pos, pos + month_name.length).toLowerCase() == month_name.toLowerCase()) {
 							month = i + 1;
 							pos += month_name.length;
@@ -3002,8 +3025,8 @@
 				case 'MMMM':
 				case 'LLLL':
 					month = 0;
-					for (var i = 0; i < self.locales.month_names.length; i++) {
-						var month_name = self.locales.month_names[i];
+					for (i = 0; i < self.locales.month_names.length; i++) {
+						const month_name = self.locales.month_names[i];
 						if (value.substring(pos, pos + month_name.length).toLowerCase() == month_name.toLowerCase()) {
 							month = i + 1;
 							pos += month_name.length;
@@ -3538,6 +3561,10 @@
 			this.$grid.removeClass('rtl');
 		}
 	} // end setLocales()
+
+	Datepicker.prototype.keyboardUsed = function() {
+		this.$calendar.find('.datepicker-help-text').show();
+	}
 
 	// DATEPICKER PLUGIN DEFINITION
 	// ==========================
