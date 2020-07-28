@@ -231,7 +231,11 @@
 		}
 		factory(jQuery);
 	}
-}(function($){
+}(
+	/**
+	 * @param {JQueryStatic} $
+	 */
+	function($){
 	'use strict';
 
 	// Icon sets for templates
@@ -375,6 +379,10 @@
 		return html.replace(/{icon-([^}]+)}/g, function(e, name) { return iconSet[name]; });
 	}
 
+	/**
+	 * @param {HTMLElement} target text input field
+	 * @param {Datepicker.DEFAULTS} options
+	 */
 	var Datepicker = function (target, options) {
 		var self = this;
 		this.$target = $(target); // textbox that will receive the selected date string and focus (if modal)
@@ -426,7 +434,12 @@
 		}
 		this.id = this.$target.attr('id') || 'datepicker-' + Math.floor(Math.random() * 100000);
 
-		this.$linkField = this.options.linkField ? $(this.options.linkField) : null;
+		/**
+		 * Optional field to receive any updated date according to options.linkFormat.
+		 * Normally a hidden input.
+		 * @type {?JQuery<HTMLElement>}
+		 */
+		this.$linkField = this.options.linkField ? $(document.getElementById(this.options.linkField)) : null;
 
 		/** Whether the link and calendar will be contained in an input-group element, or left loose */
 		const needsWrapper = !this.options.button;
@@ -454,12 +467,14 @@
 		this.$target.css('min-width', '7em');
 		this.$target.addClass('form-control');
 
-		if (! this.$target.attr('placeholder')) {
+		if (!this.$target.attr('placeholder')) {
 			this.$target.attr('placeholder', this.options.inputFormat[0]);
 		}
 
 		if (options.button) {
-			// existing button, adorned with a few accessibility bits
+			/** existing button, adorned with a few accessibility bits
+			 * @type {?JQuery}
+			 */
 			this.$button = $(document.getElementById(options.button));
 			this.$button
 				.attr('aria-haspopup', 'true')
@@ -515,7 +530,7 @@
 
 		if (this.options.inline != false) {
 			this.hideObject(this.$button);
-			var $container = typeof this.options.inline === 'string' ? $('#' + this.options.inline) : this.options.inline;
+			var $container = typeof this.options.inline === 'string' ? $(document.getElementById(this.options.inline)) : this.options.inline;
 			$container.append(this.$calendar);
 			this.$calendar.css({position: 'relative', left: '0px'});
 			this.initializeDate();
@@ -557,8 +572,7 @@
 			}
 			return false;
 		});
-		this.$button.keydown(function(e) {
-			var ev = e || event;
+		this.$button.keydown(function(ev) {
 			self.keyboardUsed();
 			if(ev.keyCode == self.keys.enter || ev.keyCode == self.keys.space) {
 				$(this).trigger('click');
@@ -582,9 +596,13 @@
 		datesDisabled: [],
 		timeEnabled: false,
 		timeOnly: false,
+		/** @type {?(date: Date) => boolean} */
 		isDateDisabled: null,
+		/** @type {?(year: number, month: number) => boolean} */
 		isMonthDisabled: null,
+		/** @type {?(year: number) => boolean} */
 		isYearDisabled: null,
+		/** @type {?string} */
 		linkField: null,
 		linkFormat: 'yyyy-MM-dd',
 		inputFormat: [Date.dp_locales.short_format],
@@ -604,6 +622,7 @@
 		changeRangeButtonLabel: Date.dp_locales.texts.changeRangeButtonLabel,
 		closeButtonTitle: Date.dp_locales.texts.closeButtonTitle,
 		closeButtonLabel: Date.dp_locales.texts.closeButtonLabel,
+		/** @type {(Date) => void} */
 		onUpdate: function () {},
 		previous: null,
 		next: null,
@@ -620,6 +639,7 @@
 		minuteIncrements: 30,
 		fontAwesome: false,
 		fontAwesomePro: false,
+		clientValidation: true,
 	}
 
 	/**
@@ -654,18 +674,15 @@
 		this.dateObj = newDate;
 		init = (typeof init === 'undefined') ? false : init;
 		if (this.dateObj == null) {
-			this.$target.attr('aria-invalid', true);
-			this.$target.parents('.form-group').addClass('has-error');
+			this.markHasError(true);
 			this.dateObj = new Date();
 			this.dateObj.setHours(0, 0, 0, 0);
 		}
 		if (this.options.min != null && this.dateObj < this.options.min) {
-			this.$target.attr('aria-invalid', true);
-			this.$target.parents('.form-group').addClass('has-error');
+			this.markHasError(true);
 			this.dateObj = this.options.min;
 		} else if (this.options.max != null && this.dateObj > this.options.max) {
-			this.$target.attr('aria-invalid', true);
-			this.$target.parents('.form-group').addClass('has-error');
+			this.markHasError(true);
 			this.dateObj = this.options.max;
 		}
 		if (!init || this.$target.val() != '') {
@@ -1468,8 +1485,13 @@
 
 		// bind target handlers
 		this.$target.change(function() {
-			var date = self.parseDate($(this).val());
+			const currentValue = $(this).val();
+			const date = self.parseDate(currentValue);
+			// If there's a value and it parsed to nothing, it's an error
+			// (If there wasn't a value, it's not an error in itself)
+			self.markHasError(!!currentValue && !date);
 			self.updateLinked(date);
+			self.updateLinkField(date);
 		});
 	}; // end bindHandlers();
 
@@ -2536,8 +2558,7 @@
 		var date = new Date(this.year, this.month, parseInt($curDay.attr('data-value'), 10), this.dateObj.getHours(), this.dateObj.getMinutes());
 		var val = this.formatDate(date, this.options.outputFormat);
 		this.$target.val(val);
-		this.$target.removeAttr('aria-invalid');
-		this.$target.parents('.form-group').removeClass('has-error');
+		this.markHasError(false);
 		this.$target.trigger('change');
 		if (this.options.onUpdate) {
 			this.options.onUpdate(val);
@@ -2545,10 +2566,33 @@
 	} // end update()
 
 	/**
+	 * Updates the value of additional field specified in the linkField option
+	 *
+	 * @param {Date} date the current value of this Datepicker date.
+	 * @return {void}
+	 */
+	Datepicker.prototype.updateLinkField = function(date) {
+		if (this.$linkField) {
+			if (date) {
+				const newValue = this.formatDate(date, this.options.linkFormat);
+				this.log('Updating linkField to ' + newValue);
+				this.$linkField.val(newValue);
+			} else {
+				this.log('Unsetting linkField');
+				this.$linkField.val('');
+			}
+		}
+	}
+
+	/**
 	 *	updateLinked() is a member function to update the linked textbox.
 	 *
-	 *	@param	(date Date) the current value of this Datepicker date.
-	 *	@return N/A
+	 *  "Linked" in this context means another datepicker field that represents
+	 *  a different but related date, such as start and end dates, so it can validate
+	 *  e.g. that one date is after the other.
+	 *
+	 *	@param {Date} date the current value of this Datepicker date.
+	 *	@return {void}
 	 */
 	Datepicker.prototype.updateLinked = function(date) {
 		if (this.options.previous !== null && this.options.previous.val() !== '') {
@@ -3221,8 +3265,7 @@
 		if (value != null) {
 			this.options.min = value instanceof Date ? value : this.parseDate(value);
 			if (this.options.min != null && this.dateObj < this.options.min) {
-				this.$target.attr('aria-invalid', true);
-				this.$target.parents('.form-group').addClass('has-error');
+				this.markHasError(true);
 				this.dateObj = this.options.min;
 			}
 			if (this.options.inline != false) {
@@ -3231,6 +3274,44 @@
 		}
 		return this.options.min;
 	} // end min()
+
+	/**
+	 * Update UI to indicate whether the current value is invalid.
+	 * 
+	 * @param {boolean} hasError 
+	 */
+	Datepicker.prototype.markHasError = function(hasError) {
+		if (hasError) {
+			this.$target.attr('aria-invalid', 'true');
+			this.$target.parents('.form-group').addClass('has-error');
+			this.setCustomValidity('Invalid date format');
+		} else {
+			this.$target.removeAttr('aria-invalid');
+			this.$target.parents('.form-group').removeClass('has-error');
+			this.setCustomValidity('');
+		}
+	};
+
+	/**
+	 * Sets a custom validity message on the input if the browser supports it.
+	 * This prevents the form from submitting while it is set, and displays the
+	 * message to the user.
+	 * 
+	 * Setting the message to an empty string unsets the message and makes the input
+	 * valid again (unless it's still invalid for other reasons).
+	 * 
+	 * Does nothing if options.clientValidation=false.
+	 * 
+	 * @param {string} message Validation message to set
+	 */
+	Datepicker.prototype.setCustomValidity = function(message) {
+		if (this.options.clientValidation) {
+			const target = this.$target.get(0);
+			if (target && target.setCustomValidity) {
+				target.setCustomValidity(message);
+			}
+		}
+	};
 
 	/**
 	 *	max() is a public member function which allow change the biggest selectable date.
@@ -3242,8 +3323,7 @@
 		if (value != null) {
 			this.options.max = value instanceof Date ? value : this.parseDate(value);
 			if (this.options.max != null && this.dateObj > this.options.max) {
-				this.$target.attr('aria-invalid', true);
-				this.$target.parents('.form-group').addClass('has-error');
+				this.markHasError(true);
 				this.dateObj = this.options.max;
 			}
 			if (this.options.inline != false) {
