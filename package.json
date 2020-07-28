@@ -1,13 +1,13 @@
 {
   "name": "@universityofwarwick/ab-datepicker",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "An accessible and bootstrap compatible datepicker",
   "main": "js/datepicker.js",
   "directories": {
     "test": "tests"
   },
   "scripts": {
-    "minify-js": "terser -o js/datepicker.min.js js/datepicker.js --source-map url=datepicker.min.js.map",
+    "minify-js": "terser -o js/datepicker.min.js js/datepicker.js --source-map base=js,url=datepicker.min.js.map",
     "build": "npm run minify-js",
     "prepublishOnly": "npm run build",
     "lint": "eslint js/datepicker.js",
