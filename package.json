@@ -1,6 +1,6 @@
 {
   "name": "@universityofwarwick/ab-datepicker",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "An accessible and bootstrap compatible datepicker",
   "main": "js/datepicker.js",
   "directories": {
