@@ -114,10 +114,14 @@
 
             <div class="form-group">
                 <label class="control-label" for="date1">
-                    Date:
+                    Date with link field:
                 </label>
                 <div class="input-group">
-                    <input type="text" name="date1" id="date1" class="form-control datepicker" >
+                    <input type="text" name="date1" id="date1" data-link-field="date1-link" class="form-control datepicker">
+                </div>
+                <div>
+                    <div class="text-muted">Following field would normally be hidden</div>
+                    <input type="text" id="date1-link" class="form-control" readonly>
                 </div>
             </div>
 

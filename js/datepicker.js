@@ -426,6 +426,8 @@
 		}
 		this.id = this.$target.attr('id') || 'datepicker-' + Math.floor(Math.random() * 100000);
 
+		this.$linkField = this.options.linkField ? $(this.options.linkField) : null;
+
 		/** Whether the link and calendar will be contained in an input-group element, or left loose */
 		const needsWrapper = !this.options.button;
 
@@ -583,6 +585,8 @@
 		isDateDisabled: null,
 		isMonthDisabled: null,
 		isYearDisabled: null,
+		linkField: null,
+		linkFormat: 'yyyy-MM-dd',
 		inputFormat: [Date.dp_locales.short_format],
 		outputFormat: Date.dp_locales.short_format,
 		titleFormat: Date.dp_locales.full_format,

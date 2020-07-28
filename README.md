@@ -135,6 +135,8 @@ and give some options to the datepicker. See [Configuration options](#configurat
 |isDateDisabled        |A function that is called for each date of the days calendar. Must return true if the date provided as argument must be disabled, false otherwise.|null|function (date) { return date < new Date(); }|
 |isMonthDisabled       |A function that is called for each date of the days calendar and each month of the months calendar. Must return true if the month provided as arguments (year and month number - 1 to 12) must be disabled, false otherwise.|null|function (year, month) { return year < 2000 || (year = 2000 && month < 7); }|
 |isYearDisabled        |A function that is called for each date of the days calendar, each month of the months calendar and each year of the year calendar. Must return true if the year provided as argument must be disabled, false otherwise.|null|function (year) { return year < 2000; }|
+|linkField             |The ID of a hidden field that will receive values||linkField:'startDate'|
+|linkFormat            |The format to use for setting the value on linkField.||linkFormat: 'yyyy-MM-dd'|
 |markup                |The html markup to use|bootstrap3|markup: 'bootstrap4' |
 |max                   |The maximum/latest date that can be selected|null|max: '06/12/2016' |
 |min                   |The minimum/earliest date that can be selected|null|min: '08/11/2015' |
