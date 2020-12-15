@@ -800,6 +800,8 @@
 	 *
 	 */
 	Datepicker.prototype.populateDaysCalendar = function() {
+		const today = new Date();
+		today.setHours(0,0,0,0);		
 		this.log('populateDaysCalendar');
 		this.$calendar.find('.datepicker-bn-prev-label').html(this.options.prevButtonLabel);
 		this.$calendar.find('.datepicker-bn-next-label').html(this.options.nextButtonLabel);
@@ -881,6 +883,7 @@
 			var date = new Date(this.year, this.month, curDay, 0, 0, 0, 0);
 			var longdate = this.formatDate(date, this.options.titleFormat);
 			var curDayClass = curDay == this.date && this.month == this.curMonth && this.year == this.curYear ? ' curDay' : '';
+			const isToday = date.toISOString() === today.toISOString();
 			if (isYearDisabled || isMonthDisabled) {
 				gridCells += '\t\t<td id="cell' + curDay + '-' + this.id + '" class="day unselectable' + curDayClass + '"';
 			} else if ($.inArray(weekday, this.options.daysOfWeekDisabled) > -1) {
@@ -899,6 +902,9 @@
 			gridCells += ' data-value="' + curDay + '"';
 			gridCells += ' title="' + longdate + '"';
 			gridCells += ' aria-label="' + longdate + '"';
+			if (isToday) {
+				gridCells += 'aria-current="date"';
+			}
 			gridCells += ' headers="day' + weekday + '-header-' + this.id + '" role="gridcell" tabindex="-1" aria-selected="false">' + curDay;
 			gridCells +=  '</td>';
 			if (weekday == lastDayOfWeek && curDay < numDays) {
