@@ -882,7 +882,8 @@
 			var date = new Date(this.year, this.month, curDay, 0, 0, 0, 0);
 			var longdate = this.formatDate(date, this.options.titleFormat);
 			var curDayClass = curDay == this.date && this.month == this.curMonth && this.year == this.curYear ? ' curDay' : '';
-			const isToday = date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
+			today.setHours(0,0,0,0);
+			const isToday = date.toISOString() === today.toISOString();
 			if (isYearDisabled || isMonthDisabled) {
 				gridCells += '\t\t<td id="cell' + curDay + '-' + this.id + '" class="day unselectable' + curDayClass + '"';
 			} else if ($.inArray(weekday, this.options.daysOfWeekDisabled) > -1) {
