@@ -801,6 +801,7 @@
 	 */
 	Datepicker.prototype.populateDaysCalendar = function() {
 		const today = new Date();
+		today.setHours(0,0,0,0);		
 		this.log('populateDaysCalendar');
 		this.$calendar.find('.datepicker-bn-prev-label').html(this.options.prevButtonLabel);
 		this.$calendar.find('.datepicker-bn-next-label').html(this.options.nextButtonLabel);
@@ -882,7 +883,6 @@
 			var date = new Date(this.year, this.month, curDay, 0, 0, 0, 0);
 			var longdate = this.formatDate(date, this.options.titleFormat);
 			var curDayClass = curDay == this.date && this.month == this.curMonth && this.year == this.curYear ? ' curDay' : '';
-			today.setHours(0,0,0,0);
 			const isToday = date.toISOString() === today.toISOString();
 			if (isYearDisabled || isMonthDisabled) {
 				gridCells += '\t\t<td id="cell' + curDay + '-' + this.id + '" class="day unselectable' + curDayClass + '"';
