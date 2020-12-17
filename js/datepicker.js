@@ -942,6 +942,7 @@
 	 *
 	 */
 	Datepicker.prototype.populateMonthsCalendar = function() {
+		const today = new Date();
 		this.log('populateMonthsCalendar');
 		this.$calendar.find('.datepicker-bn-prev-label').html(this.options.prevMonthButtonLabel);
 		this.$calendar.find('.datepicker-bn-next-label').html(this.options.nextMonthButtonLabel);
@@ -994,6 +995,9 @@
 			gridCells += ' data-value="' + curMonth + '"';
 			gridCells += ' title="' + this.locales.month_names[curMonth] + ' ' + this.year + '"';
 			gridCells += ' aria-label="' + this.locales.month_names[curMonth] + ' ' + this.year + '"';
+			if (curMonth === today.getMonth() && this.curYear === today.getFullYear()) {
+				gridCells += ' aria-current="true"'
+			}
 			gridCells += ' role="gridcell" tabindex="-1" aria-selected="false">' + this.locales.month_names_abbreviated[curMonth];
 			gridCells +=  '</td>';
 			if (curMonth == 3 || curMonth == 7) {
@@ -1014,6 +1018,7 @@
 	 *
 	 */
 	Datepicker.prototype.populateYearsCalendar = function() {
+		const thisYear = new Date().getFullYear();
 		this.$calendar.find('.datepicker-bn-prev-label').html(this.options.prevYearButtonLabel);
 		this.$calendar.find('.datepicker-bn-next-label').html(this.options.nextYearButtonLabel);
 		this.hideObject(this.$fastprev);
@@ -1062,6 +1067,9 @@
 			}
 			gridCells += ' data-value="' + curYear + '"';
 			gridCells += ' title="' + curYear + '"';
+			if (curYear === thisYear) {
+				gridCells += ' aria-current="true"';
+			}
 			gridCells += ' role="gridcell" tabindex="-1" aria-selected="false">' + curYear;
 			gridCells +=  '</td>';
 			var curPos = curYear - startYear;
