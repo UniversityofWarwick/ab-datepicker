@@ -422,4 +422,9 @@ a.datepicker-button.bootstrap:focus {
 	padding: 0.3em 0.6em;
 	display: none;
 }
+
+.datepicker-calendar td[aria-current] {
+	font-weight: bold;
+	font-size: 110%;
+}
  
