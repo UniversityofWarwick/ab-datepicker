@@ -28,6 +28,11 @@ The calendar portion can be displayed in a numbers of ways, including as a popup
 
 **[&uparrow; back to table of contents](#table-of-contents)**
 
+## Breaking changes
+* In version 2.3.0, the abbreviation of September in British/Australian locales has been changed to "Sept" (was formerly "Sep").
+
+**[&uparrow; back to table of contents](#table-of-contents)**
+
 ## Dependencies
 * [jQuery](https://jquery.com/)
 * [Bootstrap](http://getbootstrap.com/)
