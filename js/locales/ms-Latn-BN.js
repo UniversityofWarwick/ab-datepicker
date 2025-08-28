@@ -43,7 +43,7 @@
 		        "Jun",
 		        "Jul",
 		        "Ogo",
-		        "Sept",
+		        "Sep",
 		        "Okt",
 		        "Nov",
 		        "Dis"
