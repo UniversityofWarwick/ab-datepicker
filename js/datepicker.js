@@ -637,6 +637,7 @@
 		minHour: 0,
 		maxHour: 23,
 		minuteIncrements: 30,
+		noMinutesOutsideHourRange: false,
 		fontAwesome: false,
 		fontAwesomePro: false,
 		clientValidation: true,
@@ -748,19 +749,23 @@
 		var d = new Date();
 		for (h = this.options.minHour; h <= this.options.maxHour; h++) {
 			for (m = 0; m < 60; m += this.options.minuteIncrements) {
-				d.setHours(h);
-				d.setMinutes(m);
-				$li = $('<li>')
-					.text(this.formatDate(d, 'HH:mm'))
-					.addClass('selectable')
-					.data('hours', h)
-					.data('minutes', m)
-					.attr('id', 'time-' + h + '_' + m + '-' + this.id)
-					.attr('role', 'option');
-				if (this.dateObj.getHours() === h && this.dateObj.getMinutes() === m) {
-					$li.focus().addClass('curTime');
+				// If noMinutesOutsideHourRange is selected, then we shouldn't show increments beyond the max hour itself
+				// e.g. maxHour: 17 and increment of 15 would show: 16:15, 16:30, 16:45, 17:00
+				if (h < this.options.maxHour || m === 0 || !this.options.noMinutesOutsideHourRange) {
+					d.setHours(h);
+					d.setMinutes(m);
+					$li = $('<li>')
+						.text(this.formatDate(d, 'HH:mm'))
+						.addClass('selectable')
+						.data('hours', h)
+						.data('minutes', m)
+						.attr('id', 'time-' + h + '_' + m + '-' + this.id)
+						.attr('role', 'option');
+					if (this.dateObj.getHours() === h && this.dateObj.getMinutes() === m) {
+						$li.focus().addClass('curTime');
+					}
+					$list.append($li);
 				}
-				$list.append($li);
 			}
 		}
 		// Default to midnight if nothing else comes up
