@@ -149,6 +149,7 @@ and give some options to the datepicker. See [Configuration options](#configurat
 |minHour               |The minimum hour that is included in the time panel.|0|minHour:9|
 |maxHour               |The maximum hour that is included in the time panel.|23|minHour:18|
 |minuteIncrements      |The size of minute steps to provide as options in the time picker. Choose 60 to only allow whole hours.|30|minuteIncrements:15|
+|constrainMinutesToRange |Hide minute increments after the maxHour provided.|false|noMinutesOutsideHourRange: true|
 |modal                 |Indicates if the calendar must be opened in modal mode, that is it keeps the focus until the user selects a date or clicks the close button|false|modal: true|
 |next                  |Link the target input of the datepicker to the input of another datepicker that represents the end date of a range|null|next: '#enddate' or next: $('#enddate')|
 |nextButtonLabel       |Accessibility label : 'aria-labelledby' attribute for the next month button|Date.dp_locales.texts.nextButtonLabel (*)|nextButtonLabel: "Aller au mois suivant"|
