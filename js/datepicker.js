@@ -637,7 +637,7 @@
 		minHour: 0,
 		maxHour: 23,
 		minuteIncrements: 30,
-		noMinutesOutsideHourRange: false,
+		constrainMinutesToRange: false,
 		fontAwesome: false,
 		fontAwesomePro: false,
 		clientValidation: true,
@@ -749,9 +749,9 @@
 		var d = new Date();
 		for (h = this.options.minHour; h <= this.options.maxHour; h++) {
 			for (m = 0; m < 60; m += this.options.minuteIncrements) {
-				// If noMinutesOutsideHourRange is selected, then we shouldn't show increments beyond the max hour itself
+				// If constrainMinutesToRange is selected, then we shouldn't show increments beyond the max hour itself
 				// e.g. maxHour: 17 and increment of 15 would show: 16:15, 16:30, 16:45, 17:00
-				if (h < this.options.maxHour || m === 0 || !this.options.noMinutesOutsideHourRange) {
+				if (h < this.options.maxHour || m === 0 || !this.options.constrainMinutesToRange) {
 					d.setHours(h);
 					d.setMinutes(m);
 					$li = $('<li>')
